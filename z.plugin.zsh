@@ -3,7 +3,7 @@ __Z_MAX_SCORE=10000
 __Z_DATABASE_VERSION=1
 
 _z_init_db() {
-    [[ -f "$1" ]] || print -r -- "VERSION: $__Z_DATABASE_VERSION" > "$1"
+    [[ -f "$1" ]] || print "VERSION: $__Z_DATABASE_VERSION" > "$1"
 }
 
 _z_fail() {
@@ -121,5 +121,5 @@ zclean() {
 
 autoload -Uz add-zsh-hook
 add-zsh-hook chpwd _z_track
-[[ ! -f "$Z_DATABASE" ]] && \touch "$Z_DATABASE"
+[[ ! -f "$Z_DATABASE" ]] && _z_init_db "$Z_DATABASE"
 alias z="zcd"
