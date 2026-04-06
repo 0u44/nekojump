@@ -10,6 +10,11 @@ _z_fail() {
     print -P "%F{red}$1%f" >&2
 }
 
+_z_warn() {
+    print -P "%F{yellow}$1%f" >&2
+}
+
+
 _z_check_db_compat() {
     local db="$1"
     [[ -f "$db" ]] || return 0
@@ -79,16 +84,43 @@ zcd() {
     done
 
     local db="$Z_DATABASE"
-    [[ -f "$db" ]] || return 1
+    [[ -f "$db" ]] || {
+        _z_fail "the Z database dosen't exist"
+        _z_warn "failing back to the old cd command"
+        cd "$query"
+        return $?
+    }
 
     _z_check_db_compat "$db" || {
-        _z_fail "failing back to the old cd command"
+        _z_warn "failing back to the old cd command"
         cd "$query"
         return $?
     }
     
-    local dest="$(awk -F '|' -v q="$query" -v curr="$PWD" 'tolower($2) ~ tolower(q) && $2 != curr {print $1, $2}' "$db" | sort -nr | head -n 1 | cut -d ' ' -f 2-)"
-    [[ -n "$dest" ]] && cd "$dest"
+    local match
+    match=$(awk -F'|' -v q="$query" '
+        BEGIN { IGNORECASE=1 } 
+        $2 ~ q { print $1, $2 }
+    ' "$db" 2>/dev/null | sort -k1,1nr | head -n 1 | cut -d' ' -f2-)
+
+    if [[ -z "$match" ]]; then
+        echo "z: No match found for '$1'" >&2
+        return 1
+    fi
+
+    # Handle case where matched path is a file (unlikely but safe)
+    if [[ -f "$match" ]]; then
+        _z_warn 'the match is a file, using the parent'
+        match="${match:h}"
+    fi
+
+    if [[ -d "$match" ]]; then
+        cd "$match"
+    else
+        _z_fail "z: Match exists in DB but directory is missing: $match"
+        # TODO(anas): Clean up here automatically?
+        return 1
+    fi
 }
 
 zi() {
