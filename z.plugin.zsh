@@ -128,7 +128,7 @@ zi() {
     local db="$Z_DATABASE"
     [[ -f "$db" ]] || return 1
     _z_check_db_compat "$db" || return 1
-    local dest="$(sort -t '|' -k1 -nr "$db" | cut -d '|' -f 2 | fzf)"
+    local dest="$(tail --lines=+2 "$db" | sort -t '|' -k1 -nr | cut -d '|' -f 2 | fzf)"
     [[ -n "$dest" ]] && cd "$dest"
 }
 
