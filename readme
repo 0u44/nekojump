@@ -1,0 +1,61 @@
+NekoJump (猫ジャンプ)
+=====================
+A silly `cd` command that learns you :3
+
+Installation
+============
+```
+# mkdir -p /usr/share/zsh/plugins/nekojump
+# cp nekojump.plugin.zsh /usr/share/zsh/plugins/nekojump/
+```
+
+and make sure to `source` it somewhere in your shell startup scripts
+
+```
+source /usr/share/zsh/plugins/nekojump/nekojump.plugin.zsh
+```
+
+Why `NekoJump`?
+===============
+
+Because cats don’t search — they *know* where to go.
+Highest shelf, warmest spot, most-used directory… effortless.
+
+`NekoJump` learns your habits and jumps there instantly.
+
+
+AI chose this name because my original name was so good that I had to change it
+so you wouldn't immediately fall in love with me.
+
+
+
+Why use this over `zoxide` or `autojump`?
+=========================================
+
+Because it’s cuter :3
+
+Also:
+
+* no magic, just a simple script
+* uses only standard Unix utilities
+* easy to read, tweak, debug, and eat.
+* does exactly what you expect — nothing more
+
+
+Usage
+=====
+NekoJump does provide `nekojump`, `nekojumpi`, `nekojumpd`, and `nekojumpd` functions which you use to manipulate 
+and read the `$NEKOJUMP_DATABASE`
+
+Also provides the follwing aliases for your mussel memeory:
+
+```
+alias z='nekojump'
+alias zi='nekojumpi'
+alias zd='nekojumpd'
+```
+
+------
+Small. Transparent. Hackable.
+(and yes… edible if you’re brave enough)
+
