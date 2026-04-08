@@ -96,13 +96,47 @@ zcd() {
         cd "$query"
         return $?
     }
-    
-    local match
-    match=$(awk -F'|' -v q="$query" '
-        BEGIN { IGNORECASE=1 } 
-        NR>1 && $2 ~ q { print $1, $2 }
-    ' "$db" 2>/dev/null | sort -k1,1nr | head -n 1 | cut -d' ' -f2-)
 
+    local match
+    match=$(
+      awk -F'|' -v q="$query" -v c="$PWD" '
+        BEGIN {
+          IGNORECASE=1
+          best_score = -1
+          best = ""
+          best_exact = ""
+          best_exact_from_name = 0
+        }
+        NR > 1 {
+          score = $1 + 0
+          path  = $2
+
+          if (path == c) next
+
+          name = path
+          sub(/^.*\//, "", name)
+
+          if (tolower(name) == tolower(q)) {
+            if (!best_exact_from_name || score > best_score) {
+              best_exact_from_name = 1
+              best_score = score
+              best_exact = path
+            }
+            next
+          }
+
+          if (index(tolower(path), tolower(q)) && score > best_score) {
+            best_score = score
+            best = path
+          }
+        }
+        END {
+          if (best_exact != "") print best_exact
+          else if (best != "") print best
+        }
+      ' "$db" 2>/dev/null
+    )
+    
     if [[ -z "$match" ]]; then
         _z_fail "No match found for '$1'"
         return 1
