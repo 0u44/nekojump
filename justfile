@@ -6,7 +6,7 @@ VERSIOn := "1"
 alias dist := package
 
 package:
-    tar cavf {{REPO_NAME}}-v{{VERSIOn}}.tar.gz z.plugin.zsh LICENSE 
+    tar cavf {{REPO_NAME}}-v{{VERSIOn}}.tar.gz nekojump.plugin.zsh LICENSE 
 
 clean:
     git clean -ffdx
