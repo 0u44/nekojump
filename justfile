@@ -36,5 +36,6 @@ pusht: push
     git push --tags disroot
     git push --tags tangled
     git push --tags codefloe
+
 try:
-    HOME={{justfile_directory()}}/dummy PS1='%d%% ' zsh
+    PS1='%d%% ' zsh --no-rcs
