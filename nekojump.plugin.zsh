@@ -7,11 +7,11 @@ _nekojump_init_db() {
 }
 
 _nekojump_fail() {
-    print -P "%F{red}$1%f" >&2
+    print -P "%F{red}nekojump: $1%f" >&2
 }
 
 _nekojump_warn() {
-    print -P "%F{yellow}$1%f" >&2
+    print -P "%F{yellow}nekojump: $1%f" >&2
 }
 
 
@@ -21,7 +21,7 @@ _nekojump_check_db_compat() {
     local db_version
     db_version="$(head -n 1 "$db" 2>/dev/null)"
     [[ "$db_version" == "VERSION: $__NEKOJUMB_DATABASE_VERSION" ]] && return 0
-    _nekojump_fail "Incompatible database version in $db (found: $db_version, expected: VERSION: $__NEKOJUMB_DATABASE_VERSION)"
+    _nekojump_fail "incompatible database version in $db (found: $db_version, expected: VERSION: $__NEKOJUMB_DATABASE_VERSION)"
     return 1
 }
 
@@ -85,7 +85,7 @@ nekojump() {
 
     local db="$NEKOJUMB_DATABASE"
     [[ -f "$db" ]] || {
-        _nekojump_fail "the Z database dosen't exist"
+        _nekojump_fail "the NekoJump database dosen't exist"
         _nekojump_warn "failing back to the old cd command"
         cd "$query"
         return $?
@@ -151,7 +151,7 @@ nekojump() {
     if [[ -d "$match" ]]; then
         cd "$match"
     else
-        _nekojump_fail "z: Match exists in DB but directory is missing: $match"
+        _nekojump_fail "match exists in DB but directory is missing: $match"
         # TODO(anas): Clean up here automatically?
         return 1
     fi
