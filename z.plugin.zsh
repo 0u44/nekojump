@@ -42,7 +42,7 @@ _z_track() {
     _z_init_db "$temp_db"
     \awk -F '|' -v now="$now" -v target="$target" -v max="$__Z_MAX_SCORE" '
     BEGIN { found = 0 }
-    {
+    NR>1 {
         score = $1; path = $2; ts = $3
         days = (now - ts) / 86400
         if (days > 0) score = score * (0.9 ^ days)
@@ -100,11 +100,11 @@ zcd() {
     local match
     match=$(awk -F'|' -v q="$query" '
         BEGIN { IGNORECASE=1 } 
-        $2 ~ q { print $1, $2 }
+        NR>1 && $2 ~ q { print $1, $2 }
     ' "$db" 2>/dev/null | sort -k1,1nr | head -n 1 | cut -d' ' -f2-)
 
     if [[ -z "$match" ]]; then
-        echo "z: No match found for '$1'" >&2
+        _z_fail "No match found for '$1'"
         return 1
     fi
 
@@ -138,7 +138,7 @@ zd() {
     local target="${1:-$PWD}"
     _z_init_db "$temp_db"
     _z_check_db_compat "$db" || return 1
-    \awk -F '|' -v target="$target" '$2 != target' "$db" >> "$temp_db" && \mv -f "$temp_db" "$db"
+    \awk -F '|' -v target="$target" 'NR>1 && $2 != target' "$db" >> "$temp_db" && \mv -f "$temp_db" "$db"
 }
 
 zclean() {
