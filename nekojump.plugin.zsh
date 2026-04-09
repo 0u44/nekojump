@@ -162,7 +162,12 @@ nekojumpi() {
     local db="$NEKOJUMB_DATABASE"
     [[ -f "$db" ]] || return 1
     _nekojump_check_db_compat "$db" || return 1
-    local dest="$(\tail --lines=+2 "$db" | \sort -t '|' -k1 -nr | \cut -d '|' -f 2 | \fzf)"
+    local dest
+    if [[ -z "$1" ]]; then
+        dest="$(\tail --lines=+2 "$db" | \sort -t '|' -k1 -nr | \cut -d '|' -f 2 | \fzf)"
+    else
+        dest="$(\tail --lines=+2 "$db" | \grep "$1" | \sort -t '|' -k1 -nr | \cut -d '|' -f 2 | \fzf)"
+    fi
     [[ -n "$dest" ]] && \cd "$dest"
 }
 
