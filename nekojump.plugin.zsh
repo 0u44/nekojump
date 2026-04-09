@@ -222,7 +222,7 @@ nekojumpstats() {
         return 1
     }
     _nekojump_check_db_compat "$db" || return 1
-    local total=$((\wc -l < "$db") - 1)
+        local total=$(($(\wc -l < "$db") - 1))
     _nekojump_success "Database stats:"
     printf '  Total directories tracked: %d\n' "$total"
     printf '  Database location: %s\n' "$db"
