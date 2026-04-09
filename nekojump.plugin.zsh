@@ -210,9 +210,9 @@ nekojumptop() {
     _nekojump_check_db_compat "$db" || return 1
     local count="${1:-10}"
     _nekojump_success "Top $count most visited directories:"
-    \tail --lines=+2 "$db" | \sort -t '|' -k1 -nr | \head -n "$count" | \cut -d '|' -f 2,1 | while IFS='|' read -r path score; do
-        printf '  %.1f  %s\n' "$score" "$path"
-    done
+ while IFS='|' read -r _nekojump_score _nekojump_path; do
+        printf '  %.1f\t\t%s\n' "$_nekojump_score" "$_nekojump_path"
+    done < <(\tail --lines=+2 "$db" | \sort -t '|' -k1 -nr | \head -n "$count" | \cut -d '|' -f 2,1)
 }
 
 nekojumpstats() {
