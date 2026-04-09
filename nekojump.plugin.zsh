@@ -3,15 +3,15 @@ __NEKOJUMB_MAX_SCORE=10000
 __NEKOJUMB_DATABASE_VERSION=1
 
 _nekojump_init_db() {
-    [[ -f "$1" ]] || print "VERSION: $__NEKOJUMB_DATABASE_VERSION" > "$1"
+    [[ -f "$1" ]] || \print "VERSION: $__NEKOJUMB_DATABASE_VERSION" > "$1"
 }
 
 _nekojump_fail() {
-    print -P "%F{red}nekojump: $1%f" >&2
+    \print -P "%F{red}nekojump: $1%f" >&2
 }
 
 _nekojump_warn() {
-    print -P "%F{yellow}nekojump: $1%f" >&2
+    \print -P "%F{yellow}nekojump: $1%f" >&2
 }
 
 
@@ -19,7 +19,7 @@ _nekojump_check_db_compat() {
     local db="$1"
     [[ -f "$db" ]] || return 0
     local db_version
-    db_version="$(head -n 1 "$db" 2>/dev/null)"
+    db_version="$(\head -n 1 "$db" 2>/dev/null)"
     [[ "$db_version" == "VERSION: $__NEKOJUMB_DATABASE_VERSION" ]] && return 0
     _nekojump_fail "incompatible database version in $db (found: $db_version, expected: VERSION: $__NEKOJUMB_DATABASE_VERSION)"
     return 1
@@ -65,10 +65,10 @@ nekojump() {
     local query="$*"
     
     if [[ -d "$query" ]]; then
-        cd "$query"
+        \cd "$query"
         return 0
     elif [[ -f "$query" ]]; then
-        cd "${query:h}"
+        \cd "${query:h}"
         return 0
     fi
 
@@ -77,7 +77,7 @@ nekojump() {
     while [[ "$parent" != "/" && "$parent" != "." ]]; do
         parent="${parent:h}"
         if [[ "${(L)parent:t}" == *"$lower_query"* ]]; then
-            cd "$parent"
+            \cd "$parent"
             return 0
         fi
         [[ "$parent" == "/" ]] && break
@@ -86,20 +86,20 @@ nekojump() {
     local db="$NEKOJUMB_DATABASE"
     [[ -f "$db" ]] || {
         _nekojump_fail "the NekoJump database dosen't exist"
-        _nekojump_warn "failing back to the old cd command"
-        cd "$query"
+        _nekojump_warn "failing back to the old \cd command"
+        \cd "$query"
         return $?
     }
 
     _nekojump_check_db_compat "$db" || {
-        _nekojump_warn "failing back to the old cd command"
-        cd "$query"
+        _nekojump_warn "failing back to the old \cd command"
+        \cd "$query"
         return $?
     }
 
     local match
     match=$(
-      awk -F'|' -v q="$query" -v c="$PWD" '
+      \awk -F'|' -v q="$query" -v c="$PWD" '
         BEGIN {
           IGNORECASE=1
           best_score = -1
@@ -149,7 +149,7 @@ nekojump() {
     fi
 
     if [[ -d "$match" ]]; then
-        cd "$match"
+        \cd "$match"
     else
         _nekojump_fail "match exists in DB but directory is missing: $match"
         # TODO(anas): Clean up here automatically?
@@ -162,8 +162,8 @@ nekojumpi() {
     local db="$NEKOJUMB_DATABASE"
     [[ -f "$db" ]] || return 1
     _nekojump_check_db_compat "$db" || return 1
-    local dest="$(tail --lines=+2 "$db" | sort -t '|' -k1 -nr | cut -d '|' -f 2 | fzf)"
-    [[ -n "$dest" ]] && cd "$dest"
+    local dest="$(\tail --lines=+2 "$db" | \sort -t '|' -k1 -nr | \cut -d '|' -f 2 | \fzf)"
+    [[ -n "$dest" ]] && \cd "$dest"
 }
 
 nekojumpd() {
@@ -182,7 +182,7 @@ nekojumpclean() {
     _nekojump_check_db_compat "$db" || return 1
     \awk -F '|' '{
         if (system("test -d \"" $2 "\"") == 0) print $0
-    }' "$db" >> "$temp_db" && \mv  -f "$temp_db" "$db"
+    }' "$db" >> "$temp_db" && \mv -f "$temp_db" "$db"
 }
 
 autoload -Uz add-zsh-hook
