@@ -1,7 +1,7 @@
 #!/usr/bin/env just --justfile
 
 REPO_NAME := "nekojump"
-VERSIOn := "1"
+VERSIOn := "2"
 
 alias dist := package
 
