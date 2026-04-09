@@ -188,7 +188,7 @@ nekojumpclean() {
     local temp_db="${db}.$$"
     _nekojump_init_db "$temp_db"
     _nekojump_check_db_compat "$db" || return 1
-    local count_before=$((\wc -l < "$db") - 1)
+    local count_before=$(($(\wc -l < "$db") - 1))
     \awk -F '|' '{
         if (system("test -d \"" $2 "\"") == 0) print $0
     }' "$db" >> "$temp_db" && \mv -f "$temp_db" "$db"
